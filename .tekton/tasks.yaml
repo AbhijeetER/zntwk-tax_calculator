@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: npm
+spec:
+  params:
+    - name: command
+      description: The npm command to run
+      type: string
+      default: install
+  workspaces:
+    - name: source
+      description: The workspace containing the source code
+  steps:
+    - name: npm
+      image: node:18
+      workingDir: $(workspaces.source.path)
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          npm $(params.command)
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: jasmine
+spec:
+  workspaces:
+    - name: source
+      description: The workspace containing the source code
+  steps:
+    - name: jasmine
+      image: node:18
+      workingDir: $(workspaces.source.path)
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          npx jasmine
